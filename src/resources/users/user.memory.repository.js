@@ -1,4 +1,4 @@
-const { users } = require('../../../mock/data');
+const { users, tasks } = require('../../../mock/data');
 const User = require('./user.model');
 
 const getAllUsers = async () => users;
@@ -23,10 +23,15 @@ const updateUser = async (id, updatedUser) => {
 };
 
 const deleteUser = async (id) => {
-  const index = users.findIndex((user) => (user.id === id));
-  if (index < 0) return false;
+  const index = users.findIndex(user => user.id === id);
   users.splice(index, 1);
-  return true;
+  tasks.forEach(task => {
+    if (task.userId === id) {
+      const updatedTask = task;
+      updatedTask.userId = null;
+    }
+  })
+  return {};
 };
 
 module.exports = { getAllUsers, createUser, readUser, updateUser, deleteUser };
