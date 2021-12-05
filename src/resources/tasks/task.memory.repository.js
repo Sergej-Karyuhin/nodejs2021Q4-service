@@ -1,8 +1,5 @@
+const { tasks } = require('../../../mock/data');
 const Task = require('./task.model');
-
-const tasks = [];
-const taskNames = ['Banana', 'Bilberry', 'Blackberry'];
-taskNames.forEach((task) => tasks.push(new Task({ title: task })));
 
 const getAllTasks = async (boardId) => tasks.filter((task) => (task.boardId === boardId));
 

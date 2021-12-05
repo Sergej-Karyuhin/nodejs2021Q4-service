@@ -1,10 +1,5 @@
+const { users } = require('../../../mock/data');
 const User = require('./user.model');
-
-const users = [];
-const userNames = ['Foo', 'Bar', 'Baz', 'Boris', 'Britva'];
-userNames.forEach((user, index) => users.push(new User(
-  { name: user, login: `User ${index + 1}` }
-)));
 
 const getAllUsers = async () => users;
 

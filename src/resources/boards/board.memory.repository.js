@@ -1,8 +1,6 @@
+const { boards, tasks } = require('../../../mock/data');
 const Board = require('./board.model');
-
-const boards = [];
-const boardNames = ['FooBoard', 'BarBoard', 'BazBoard'];
-boardNames.forEach((board) => boards.push(new Board({ title: board })));
+const { deleteTask } = require('../tasks/task.memory.repository');
 
 const getAllBoards = async () => boards;
 
@@ -24,11 +22,16 @@ const updateBoard = async (id, updatedBoard) => {
   return boards;
 };
 
-const deleteBoard = async (id) => {
-  const index = boards.findIndex((board) => (board.id === id));
-  if (index < 0) return false;
+const deleteBoard = async id => {
+  const index = boards.findIndex(board => board.id === id);
+  if (index === -1) {
+    throw new Error('Not found');
+  }
   boards.splice(index, 1);
-  return true;
+  tasks
+    .filter(task => task.boardId === id)
+    .forEach(task => deleteTask(task.id));
+  return {};
 };
 
 module.exports = { getAllBoards, createBoard, readBoard, updateBoard, deleteBoard };
