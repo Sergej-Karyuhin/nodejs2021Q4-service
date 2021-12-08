@@ -1,4 +1,5 @@
-const express = require('express');
+import express from 'express';
+
 const swaggerUI = require('swagger-ui-express');
 const path = require('path');
 const YAML = require('yamljs');
@@ -25,4 +26,4 @@ app.use('/users', userRouter);
 app.use('/boards',boardRouter);
 app.use('/boards/:boardId/tasks', taskRouter);
 
-module.exports = app;
+export default app;
