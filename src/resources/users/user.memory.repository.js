@@ -1,5 +1,6 @@
+import User from './user.model';
+
 const { users, tasks } = require('../../../mock/data');
-const User = require('./user.model');
 
 const getAllUsers = async () => users;
 
@@ -34,4 +35,4 @@ const deleteUser = async (id) => {
   return {};
 };
 
-module.exports = { getAllUsers, createUser, readUser, updateUser, deleteUser };
+export { getAllUsers, createUser, readUser, updateUser, deleteUser };

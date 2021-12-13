@@ -1,11 +1,13 @@
-const router = require('express').Router();
-const User = require('./user.model');
-const usersService = require('./user.service');
+import { Router } from 'express';
+import { getAll, create, read, update, remove } from './user.service';
+import User from './user.model';
+
+const router = Router();
 
 router.route('/')
   .get(async (req, res) => {
     try {
-      const users = await usersService.getAll();
+      const users = await getAll();
       res.status(200).json(users.map(User.toResponse));
     } catch (e) {
       res.status(400).send(e.message);
@@ -14,7 +16,7 @@ router.route('/')
 
   .post(async (req, res) => {
     try {
-      const user = await usersService.create(req.body);
+      const user = await create(req.body);
       res.status(201).json(User.toResponse(user));
     } catch (e) {
       res.status(400).send(e.message);
@@ -25,7 +27,7 @@ router.route('/')
   router.route('/:id')
     .get(async (req, res) => {
       try {
-        const user = await usersService.read(req.params.id);
+        const user = await read(req.params.id);
         if (user) {
           res.status(200).json(User.toResponse(user));
         } else {
@@ -38,7 +40,7 @@ router.route('/')
 
     .put(async (req, res) => {
       try {
-        const user = await usersService.update(req.params.id, req.body);
+        const user = await update(req.params.id, req.body);
         if (user) {
           res.status(200).json(User.toResponse(user));
         } else {
@@ -50,7 +52,7 @@ router.route('/')
     })
 
     .delete(async (req, res) => {
-      const user = await usersService.remove(req.params.id);
+      const user = await remove(req.params.id);
       if (user) {
         res.status(200).send();
       } else {
@@ -58,4 +60,4 @@ router.route('/')
       }
     });
 
-module.exports = router;
+export default router;
