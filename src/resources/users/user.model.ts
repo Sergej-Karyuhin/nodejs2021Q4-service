@@ -15,8 +15,11 @@ export interface IUserWithPass extends IUser {
 
 class User {
   id: string;
+
   name: string;
+
   login: string;
+
   password: string;
 
   constructor({

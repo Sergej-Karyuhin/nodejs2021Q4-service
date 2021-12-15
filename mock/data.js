@@ -1,5 +1,5 @@
 import User from '../src/resources/users/user.model';
-const Task = require('../src/resources/tasks/task.model');
+import Task from '../src/resources/tasks/task.model';
 const Board = require('../src/resources/boards/board.model');
 
 const NAMES_CONFIG = {

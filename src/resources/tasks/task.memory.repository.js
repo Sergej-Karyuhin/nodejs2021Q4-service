@@ -1,5 +1,6 @@
+import Task from './task.model';
+
 const { tasks } = require('../../../mock/data');
-const Task = require('./task.model');
 
 const getAllTasks = async (boardId) => tasks.filter((task) => (task.boardId === boardId));
 
@@ -25,6 +26,4 @@ const deleteTask = async (id) => {
   return true;
 };
 
-const getAll = async () => tasks;
-
-module.exports = { getAllTasks, createTask, readTask, updateTask, deleteTask, getAll };
+export { getAllTasks, createTask, readTask, updateTask, deleteTask };

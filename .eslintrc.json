@@ -13,6 +13,8 @@
       "impliedStrict": true
     }
   },
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
   "settings": {
     "noInlineConfig": true,
     "node": {

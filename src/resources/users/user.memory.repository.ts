@@ -1,5 +1,4 @@
-import User from './user.model';
-import { IUserWithPass, IUserWithId } from './user.model';
+import User, { IUserWithPass, IUserWithId } from './user.model';
 
 const { users, tasks } = require('../../../mock/data');
 
