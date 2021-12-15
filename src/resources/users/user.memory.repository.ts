@@ -1,19 +1,20 @@
 import User from './user.model';
+import { IUserWithPass, IUserWithId } from './user.model';
 
 const { users, tasks } = require('../../../mock/data');
 
 const getAllUsers = async () => users;
 
-const createUser = async (user) => {
+const createUser = async (user: IUserWithPass) => {
   const newUser = new User(user);
   users.push(newUser);
   return newUser;
 };
 
-const readUser = async (id) => users.find(user => (user.id === id));
+const readUser = async (id: string) => users.find((user: IUserWithId) => (user.id === id));
 
-const updateUser = async (id, updatedUser) => {
-  const foundUser = users.find(user => (user.id === id));
+const updateUser = async (id: string, updatedUser: IUserWithPass) => {
+  const foundUser = users.find((user: IUserWithId) => (user.id === id));
   if (foundUser) {
     foundUser.name = updatedUser.name;
     foundUser.login = updatedUser.login;
@@ -23,10 +24,10 @@ const updateUser = async (id, updatedUser) => {
   return users;
 };
 
-const deleteUser = async (id) => {
-  const index = users.findIndex(user => user.id === id);
+const deleteUser = async (id: string) => {
+  const index = users.findIndex((user: IUserWithId) => user.id === id);
   users.splice(index, 1);
-  tasks.forEach(task => {
+  tasks.forEach((task: any) => {
     if (task.userId === id) {
       const updatedTask = task;
       updatedTask.userId = null;
