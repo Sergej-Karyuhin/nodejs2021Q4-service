@@ -7,21 +7,21 @@ const router = Router({ mergeParams: true });
 router.route('/')
   .get(async (req, res) => {
     try {
-      const { boardId } = req.params;
+      const { boardId } : any = req.params;
       const tasks = await getAll(boardId);
       res.status(200).json(tasks.map(Task.toResponse));
     } catch (e) {
-      res.status(404).send(e.message);
+      res.status(400);
     }
   })
 
   .post(async (req, res) => {
-    try {
-      const { boardId } = req.params;
-      const task = await create({ ...req.body, boardId });
+    const { boardId } : any = req.params;
+    const task = await create({ ...req.body, boardId });
+    if (task) {
       res.status(201).json(Task.toResponse(task));
-    } catch (e) {
-      res.status(404).send(e.message);
+    } else {
+      res.status(400);
     }
   });
 
@@ -33,23 +33,20 @@ router.route('/:id')
       if (task) {
         res.status(200).json(Task.toResponse(task));
       } else {
-        throw new Error(404, `Not found`);
+        throw new Error(`Not found`);
       }
     } catch (e) {
-      res.status(404).send(e.message);
+      res.status(404).send();
     }
   })
 
   .put(async (req, res) => {
-    try {
-      const task = await update(req.params.boardId, req.params.id, req.body);
-      if (task) {
-        res.status(200).json(Task.toResponse(task));
-      } else {
-        throw new Error(404, `Not found`);
-      }
-    } catch (e) {
-      res.status(400).send(e.message);
+    const { boardId } : any = req.params;
+    const task = await update(boardId, req.params.id, req.body);
+    if (task) {
+      res.status(200).json(Task.toResponse(task));
+    } else {
+      res.status(400);
     }
   })
 
@@ -58,8 +55,9 @@ router.route('/:id')
     if (deleted) {
       res.status(200).send();
     } else {
-      throw new Error(404, `Not found`);
+      res.status(404);
     }
   });
 
   export default router;
+
