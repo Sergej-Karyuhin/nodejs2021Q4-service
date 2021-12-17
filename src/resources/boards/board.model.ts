@@ -1,6 +1,18 @@
 const { v4: uuidv4 } = require('uuid');
 
+export interface IBoard {
+  id: string;
+  title: string;
+  columns: any;
+}
+
 class Board {
+  id: string;
+
+  title: string;
+
+  columns: any;
+
   constructor({
     id = uuidv4(),
     title = 'Board',
@@ -11,9 +23,8 @@ class Board {
     this.columns = columns;
   }
 
-  static toResponse(board) {
-    const { id, title, columns } = board;
-    return { id, title, columns };
+  static toResponse(board: IBoard) {
+    return board;
   }
 }
 

@@ -5,12 +5,12 @@ import Board from './board.model';
 const router = Router();
 
 router.route('/')
-  .get(async (req, res) => {
+  .get(async (_, res) => {
     try {
       const boards = await getAll();
       res.status(200).json(boards.map(Board.toResponse));
     } catch (e) {
-      res.status(404).send(e.message);
+      res.status(404).send();
     }
   })
 
@@ -19,35 +19,27 @@ router.route('/')
       const board = await create(req.body);
       res.status(201).json(Board.toResponse(board));
     } catch (e) {
-      res.status(400).send(e.message);
+      res.status(400).send();
     }
   });
 
 
 router.route('/:id')
   .get(async (req, res) => {
-    try {
-      const board = await read(req.params.id);
-      if (board) {
-        res.status(200).json(Board.toResponse(board));
-      } else {
-        throw new Error(404, `Not found`);
-      }
-    } catch (e) {
-      res.status(404).send(e.message);
+    const board = await read(req.params.id);
+    if (board) {
+      res.status(200).json(Board.toResponse(board));
+    } else {
+      res.status(404).send();
     }
   })
 
   .put(async (req, res) => {
-    try {
-      const board = await update(req.params.id, req.body);
-      if (board) {
-        res.json(Board.toResponse(board));
-      } else {
-        throw new Error(404, `Not found`);
-      }
-    } catch (e) {
-     res.status(404).send(e.message);
+    const board = await update(req.params.id, req.body);
+    if (board) {
+      res.json(Board.toResponse(board));
+    } else {
+      res.status(404).send();
     }
   })
 
@@ -56,7 +48,7 @@ router.route('/:id')
     if (board) {
       res.status(200).send();
     } else {
-      throw new Error(404, `Not found`);
+      res.status(404).send();
     }
   });
 

@@ -1,20 +1,21 @@
-import Board from './board.model';
+import Board, { IBoard } from './board.model';
+import { ITask } from '../tasks/task.model';
 import { deleteTask } from '../tasks/task.memory.repository';
 
 const { boards, tasks } = require('../../../mock/data');
 
 const getAllBoards = async () => boards;
 
-const createBoard = async (board) => {
+const createBoard = async (board: IBoard) => {
   const newBoard = new Board(board);
   boards.push(newBoard);
   return newBoard;
 };
 
-const readBoard = async (id) => boards.find(board => (board.id === id));
+const readBoard = async (id: string) => boards.find((board: IBoard) => (board.id === id));
 
-const updateBoard = async (id, updatedBoard) => {
-  const foundBoard = boards.find(board => (board.id === id));
+const updateBoard = async (id: string, updatedBoard: IBoard) => {
+  const foundBoard = boards.find((board: IBoard) => (board.id === id));
   if (foundBoard) {
     foundBoard.title = updatedBoard.title;
     foundBoard.columns = updatedBoard.columns;
@@ -23,15 +24,15 @@ const updateBoard = async (id, updatedBoard) => {
   return boards;
 };
 
-const deleteBoard = async id => {
-  const index = boards.findIndex(board => board.id === id);
+const deleteBoard = async (id: string) => {
+  const index = boards.findIndex((board: IBoard) => board.id === id);
   if (index === -1) {
     throw new Error('Not found');
   }
   boards.splice(index, 1);
   tasks
-    .filter(task => task.boardId === id)
-    .forEach(task => deleteTask(task.id));
+    .filter((task: ITask) => task.boardId === id)
+    .forEach((task: ITask) => deleteTask(task.id));
   return {};
 };
 
