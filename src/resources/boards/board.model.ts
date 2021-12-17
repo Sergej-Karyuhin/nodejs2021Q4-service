@@ -1,9 +1,15 @@
 const { v4: uuidv4 } = require('uuid');
 
+// interface IColumns {
+//   id: string;
+//   title: string;
+//   order: number;
+// }
+
 export interface IBoard {
   id: string;
   title: string;
-  columns: any;
+  columns: never[];
 }
 
 class Board {
@@ -11,7 +17,7 @@ class Board {
 
   title: string;
 
-  columns: any;
+  columns: never[];
 
   constructor({
     id = uuidv4(),

@@ -7,7 +7,7 @@ const router = Router({ mergeParams: true });
 router.route('/')
   .get(async (req, res) => {
     try {
-      const { boardId } : any = req.params;
+      const { boardId } = req.params as { boardId: string };
       const tasks = await getAll(boardId);
       res.status(200).json(tasks.map(Task.toResponse));
     } catch (e) {
@@ -16,7 +16,7 @@ router.route('/')
   })
 
   .post(async (req, res) => {
-    const { boardId } : any = req.params;
+    const { boardId } = req.params as { boardId: string };
     const task = await create({ ...req.body, boardId });
     if (task) {
       res.status(201).json(Task.toResponse(task));
@@ -41,7 +41,7 @@ router.route('/:id')
   })
 
   .put(async (req, res) => {
-    const { boardId } : any = req.params;
+    const { boardId } = req.params as { boardId: string, id: string };
     const task = await update(boardId, req.params.id, req.body);
     if (task) {
       res.status(200).json(Task.toResponse(task));
