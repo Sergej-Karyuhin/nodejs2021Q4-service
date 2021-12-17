@@ -1,6 +1,7 @@
+import Board from './board.model';
+import { deleteTask } from '../tasks/task.memory.repository';
+
 const { boards, tasks } = require('../../../mock/data');
-const Board = require('./board.model');
-const { deleteTask } = require('../tasks/task.memory.repository');
 
 const getAllBoards = async () => boards;
 
@@ -34,4 +35,4 @@ const deleteBoard = async id => {
   return {};
 };
 
-module.exports = { getAllBoards, createBoard, readBoard, updateBoard, deleteBoard };
+export { getAllBoards, createBoard, readBoard, updateBoard, deleteBoard };

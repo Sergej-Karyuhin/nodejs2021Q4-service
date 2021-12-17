@@ -1,11 +1,13 @@
-const router = require('express').Router();
-const Board = require('./board.model');
-const boardsService = require('./board.service');
+import { Router } from 'express';
+import { getAll, create, read, update, remove} from './board.service';
+import Board from './board.model';
+
+const router = Router();
 
 router.route('/')
   .get(async (req, res) => {
     try {
-      const boards = await boardsService.getAll();
+      const boards = await getAll();
       res.status(200).json(boards.map(Board.toResponse));
     } catch (e) {
       res.status(404).send(e.message);
@@ -14,7 +16,7 @@ router.route('/')
 
   .post(async (req, res) => {
     try {
-      const board = await boardsService.create(req.body);
+      const board = await create(req.body);
       res.status(201).json(Board.toResponse(board));
     } catch (e) {
       res.status(400).send(e.message);
@@ -25,7 +27,7 @@ router.route('/')
 router.route('/:id')
   .get(async (req, res) => {
     try {
-      const board = await boardsService.read(req.params.id);
+      const board = await read(req.params.id);
       if (board) {
         res.status(200).json(Board.toResponse(board));
       } else {
@@ -38,7 +40,7 @@ router.route('/:id')
 
   .put(async (req, res) => {
     try {
-      const board = await boardsService.update(req.params.id, req.body);
+      const board = await update(req.params.id, req.body);
       if (board) {
         res.json(Board.toResponse(board));
       } else {
@@ -50,7 +52,7 @@ router.route('/:id')
   })
 
   .delete(async (req, res) => {
-    const board = await boardsService.remove(req.params.id);
+    const board = await remove(req.params.id);
     if (board) {
       res.status(200).send();
     } else {
@@ -58,4 +60,4 @@ router.route('/:id')
     }
   });
 
-module.exports = router;
+  export default router;

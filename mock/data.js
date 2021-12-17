@@ -1,6 +1,6 @@
 import User from '../src/resources/users/user.model';
 import Task from '../src/resources/tasks/task.model';
-const Board = require('../src/resources/boards/board.model');
+import Board from '../src/resources/boards/board.model';
 
 const NAMES_CONFIG = {
   users: ['Foo', 'Bar', 'Baz', 'Boris', 'Britva'],
