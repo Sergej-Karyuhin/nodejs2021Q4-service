@@ -5,9 +5,12 @@ import YAML from 'yamljs';
 import userRouter from './resources/users/user.router';
 import taskRouter from './resources/tasks/task.router';
 import boardRouter from './resources/boards/board.router';
+import expressLogger from './logger';
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
+
+app.use(expressLogger);
 
 app.use(express.json());
 
