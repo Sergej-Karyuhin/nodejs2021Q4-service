@@ -1,4 +1,5 @@
 import pino from 'pino';
+
 const expressPino = require('express-pino-logger');
 
 const logger = pino(
