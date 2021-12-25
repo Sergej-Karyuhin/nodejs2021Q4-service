@@ -5,12 +5,21 @@ import YAML from 'yamljs';
 import userRouter from './resources/users/user.router';
 import taskRouter from './resources/tasks/task.router';
 import boardRouter from './resources/boards/board.router';
-import expressLogger from './logger';
+import { logger, expressLogger } from './logger';
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
 app.use(expressLogger);
+
+process
+  .on('unhandledRejection', (reason, p) => {
+    logger.info(reason, 'Unhandled Rejection at Promise', p);
+  })
+  .on('uncaughtException', err => {
+    logger.info(err, 'Uncaught Exception thrown');
+    process.exit(1);
+  });
 
 app.use(express.json());
 
