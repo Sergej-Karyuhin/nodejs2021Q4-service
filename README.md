@@ -70,3 +70,25 @@ npm run lint
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+
+### Docker
+
+```
+docker build . -t task-7
+```
+
+```
+docker network create my-pre-existing-network
+```
+
+```
+docker volume create node
+```
+
+```
+docker volume create postgres
+```
+
+```
+docker-compose up
+```
