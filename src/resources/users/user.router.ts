@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import * as usersService from '../users/user.service';
+import * as usersService from "./user.service";
 import { UserDB } from '../../entities/User';
 
 const router = Router();

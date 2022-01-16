@@ -1,4 +1,4 @@
-import * as boardsRepo from '../boards/board.memory.repository';
+import * as boardsRepo from "./board.memory.repository";
 import { BoardDB } from '../../entities/Board';
 
 const getAll = (): Promise<BoardDB[]> => boardsRepo.getAll();
