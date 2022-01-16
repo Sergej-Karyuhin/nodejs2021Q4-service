@@ -1,20 +1,12 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 
-interface IUser {
+interface IUserPrivate {
+  id?: string;
   name: string;
   login: string;
 }
-
-export interface IUserWithId extends IUser {
-  id: string;
-}
-
-export interface IUserWithPass extends IUser {
-  password: string;
-}
-
 class User {
-  id: string;
+  id?: string;
 
   name: string;
 
@@ -22,19 +14,14 @@ class User {
 
   password: string;
 
-  constructor({
-    id = uuidv4(),
-    name = 'USER',
-    login = 'user',
-    password = 'P@55w0rd'
-  } = {}) {
-    this.id = id;
+  constructor({ name, login, password }: User) {
+    this.id = uuid();
     this.name = name;
     this.login = login;
     this.password = password;
   }
 
-  static toResponse(user: IUserWithId) {
+  static toResponse(user: User): IUserPrivate {
     const { id, name, login } = user;
     return { id, name, login };
   }

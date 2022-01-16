@@ -1,6 +1,9 @@
-import { PORT } from './common/config';
 import app from './app';
+import config from './common/envConfig';
+import databaseConnect from './services/databaseConnect';
 
-app.listen(PORT, () =>
-  console.log(`App is running on http://localhost:${PORT}`)
+databaseConnect();
+
+app.listen(config.PORT, () =>
+  console.log(`App is running on http://localhost:${config.PORT}`)
 );

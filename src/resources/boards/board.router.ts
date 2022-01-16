@@ -1,55 +1,69 @@
-import { Router } from 'express';
-import { getAll, create, read, update, remove} from './board.service';
-import Board from './board.model';
+import Router from 'express';
+import * as boardsService from "./board.service";
 
 const router = Router();
 
-router.route('/')
-  .get(async (_, res) => {
-    try {
-      const boards = await getAll();
-      res.status(200).json(boards.map(Board.toResponse));
-    } catch (e) {
-      res.status(404).send();
-    }
-  })
+router.route('/').get(async (_, res) => {
+  try {
+    const boards = await boardsService.getAll();
+    res.status(200).json(boards);
+  } catch {
+    res.status(401).json('Unauthorized');
+  }
+});
 
-  .post(async (req, res) => {
-    try {
-      const board = await create(req.body);
-      res.status(201).json(Board.toResponse(board));
-    } catch (e) {
-      res.status(400).send();
-    }
-  });
-
-
-router.route('/:id')
-  .get(async (req, res) => {
-    const board = await read(req.params.id);
+router.route('/:id').get(async (req, res) => {
+  try {
+    const board = await boardsService.getBoard(req.params.id);
     if (board) {
-      res.status(200).json(Board.toResponse(board));
+      res.status(200).json(board);
     } else {
-      res.status(404).send();
+      res.status(404).json('Board not found');
     }
-  })
+  } catch {
+    res.status(401).json('Unauthorized');
+  }
+});
 
-  .put(async (req, res) => {
-    const board = await update(req.params.id, req.body);
+router.route('/').post(async (req, res) => {
+  try {
+    const { title, columns } = req.body;
+    const board = await boardsService.save(title, columns);
     if (board) {
-      res.json(Board.toResponse(board));
+      res.status(201).json(board);
     } else {
-      res.status(404).send();
+      res.status(400).json('Bad request');
     }
-  })
+  } catch {
+    res.status(401).json('Unauthorized');
+  }
+});
 
-  .delete(async (req, res) => {
-    const board = await remove(req.params.id);
+router.route('/:id').put(async (req, res) => {
+  try {
+    const { title, columns } = req.body;
+    const board = await boardsService.update(req.params.id, title, columns);
     if (board) {
-      res.status(200).send();
+      res.status(200).json(board);
     } else {
-      res.status(404).send();
+      res.status(400).json('Bad request');
     }
-  });
+  } catch {
+    res.status(401).json('Unauthorized');
+  }
+});
 
-  export default router;
+router.route('/:id').delete(async (req, res) => {
+  try {
+    const result = await boardsService.remove(req.params.id);
+    if (result) {
+      res.status(204).json('The board has been deleted');
+    } else {
+      res.status(404).json('Board not found');
+    }
+  } catch {
+    res.status(401).json('Unauthorized');
+  }
+});
+
+export default router;

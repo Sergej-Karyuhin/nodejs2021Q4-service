@@ -1,39 +1,45 @@
-import Board, { IBoard } from './board.model';
-import { ITask } from '../tasks/task.model';
-import { deleteTask } from '../tasks/task.memory.repository';
+import { getRepository } from 'typeorm';
+import { BoardDB } from '../../entities/Board';
 
-const { boards, tasks } = require('../../../mock/data');
+const getAll = async (): Promise<BoardDB[]> => {
+  const boardRepository = await getRepository(BoardDB);
+  const allBoards = await boardRepository.find({ where: {} });
+  return allBoards;
+};
 
-const getAllBoards = async () => boards;
+const getById = async (id: string): Promise<BoardDB | null> => {
+  const boardRepository = await getRepository(BoardDB);
+  const findBoard = await boardRepository.findOne(id);
+  return findBoard ?? null;
+};
 
-const createBoard = async (board: IBoard) => {
-  const newBoard = new Board(board);
-  boards.push(newBoard);
+const save = async (title: string, columns: []): Promise<BoardDB> => {
+  const boardRepository = await getRepository(BoardDB);
+  const newBoard = await boardRepository.save({ title, columns });
+  await boardRepository.save(newBoard);
   return newBoard;
 };
 
-const readBoard = async (id: string) => boards.find((board: IBoard) => (board.id === id));
-
-const updateBoard = async (id: string, updatedBoard: IBoard) => {
-  const foundBoard = boards.find((board: IBoard) => (board.id === id));
-  if (foundBoard) {
-    foundBoard.title = updatedBoard.title;
-    foundBoard.columns = updatedBoard.columns;
-    return foundBoard;
-  }
-  return boards;
+const update = async (
+  id: string,
+  title: string,
+  columns: []
+): Promise<BoardDB | null> => {
+  const boardRepository = await getRepository(BoardDB);
+  let findBoard = await boardRepository.findOne(id);
+  if (findBoard === undefined) return null;
+  await boardRepository.update(id, { title, columns });
+  findBoard = await boardRepository.findOne(id);
+  return findBoard ?? null;
 };
 
-const deleteBoard = async (id: string) => {
-  const index = boards.findIndex((board: IBoard) => board.id === id);
-  if (index === -1) {
-    throw new Error('Not found');
+const remove = async (id: string): Promise<boolean> => {
+  const boardRepository = await getRepository(BoardDB);
+  const deletedBoard = await boardRepository.delete(id);
+  if (deletedBoard.affected) {
+    return true;
   }
-  boards.splice(index, 1);
-  tasks
-    .filter((task: ITask) => task.boardId === id)
-    .forEach((task: ITask) => deleteTask(task.id));
-  return {};
+  return false;
 };
 
-export { getAllBoards, createBoard, readBoard, updateBoard, deleteBoard };
+export { getAll, save, getById, update, remove };

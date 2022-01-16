@@ -1,29 +1,84 @@
-import Task, { ITask } from './task.model';
+import { getRepository } from 'typeorm';
+import { TaskDB } from '../../entities/Task';
 
-const { tasks } = require('../../../mock/data');
+const getAll = async (): Promise<TaskDB[]> => {
+  const taskRepository = await getRepository(TaskDB);
+  const allTasks = await taskRepository.find({ where: {}, loadRelationIds: true });
+  return allTasks;
+};
 
-const getAllTasks = async (boardId: string) => tasks.filter((task: ITask) => (task.boardId === boardId));
+const getById = async (id: string): Promise<TaskDB | null> => {
+  const taskRepository = await getRepository(TaskDB);
+  const findTask = await taskRepository.findOne({ where: { id }, loadRelationIds: true });
+  return findTask ?? null;
+};
 
-const createTask = async (task: ITask) => {
-  const newTask = new Task(task);
-  tasks.push(newTask);
+const save = async (
+  title: string,
+  order: number,
+  description: string,
+  userId: string,
+  boardId: string,
+  columnId: string
+): Promise<TaskDB> => {
+  const taskRepository = await getRepository(TaskDB);
+
+  const newTask = await taskRepository.create({
+    title,
+    order,
+    description,
+    userId,
+    boardId,
+    columnId,
+  });
+  await taskRepository.save(newTask);
+
   return newTask;
 };
 
-const readTask = async (id: string) => tasks.find((task: ITask) => (task.id === id));
+const update = async (
+  id: string,
+  title: string,
+  order: number,
+  description: string,
+  userId: string,
+  boardId: string,
+  columnId: string
+): Promise<TaskDB | null> => {
+  const taskRepository = await getRepository(TaskDB);
+  const findTask = await taskRepository.findOne(id);
+  if (findTask === undefined) return null;
+  await taskRepository.update(id, {
+    title,
+    order,
+    description,
+    userId,
+    boardId,
+    columnId,
+  });
+  const newTask = await taskRepository.findOne(id);
 
-const updateTask = async (boardId: string, taskId: string, task: ITask) => {
-  const index = tasks.findIndex((item: ITask) => (item.id === taskId));
-  const updatedTask = { ...tasks[index], ...task };
-  tasks[index] = updatedTask;
-  return updatedTask;
+  return newTask ?? null;
 };
 
-const deleteTask = async (id: string) => {
-  const index = tasks.findIndex((task: ITask) => (task.id === id));
-  if (index < 0) return false;
-  tasks.splice(index, 1);
-  return true;
+const deleteTaskById = async (id: string): Promise<boolean> => {
+  const taskRepository = await getRepository(TaskDB);
+  const deletedTask = await taskRepository.delete(id);
+  if (deletedTask.affected) {
+    return true;
+  }
+  
+  return false;
 };
 
-export { getAllTasks, createTask, readTask, updateTask, deleteTask };
+const deleteTaskByBoardID = async (boardId: string): Promise<void> => {
+  const taskRepository = await getRepository(TaskDB);
+  await taskRepository.delete({ boardId });
+};
+
+const resetID = async (userId: string): Promise<void> => {
+  const taskRepository = await getRepository(TaskDB);
+  await taskRepository.update({ userId }, { userId: null });
+};
+
+export { getAll, save, getById, update, deleteTaskById, deleteTaskByBoardID, resetID };

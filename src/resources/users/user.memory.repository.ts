@@ -1,39 +1,53 @@
-import User, { IUserWithPass, IUserWithId } from './user.model';
-import { ITask } from '../tasks/task.model';
+import { getRepository } from 'typeorm';
+import { UserDB } from '../../entities/User';
+import * as tasksService from '../tasks/task.service';
 
-const { users, tasks } = require('../../../mock/data');
+const getAll = async (): Promise<UserDB[]> => {
+  const userRepository = await getRepository(UserDB);
+  const allUsers = await userRepository.find({ where: {} });
 
-const getAllUsers = async () => users;
-
-const createUser = async (user: IUserWithPass) => {
-  const newUser = new User(user);
-  users.push(newUser);
-  return newUser;
+  return allUsers;
 };
 
-const readUser = async (id: string) => users.find((user: IUserWithId) => (user.id === id));
+const getById = async (id: string): Promise<UserDB | null> => {
+  const userRepository = await getRepository(UserDB);
+  const findUser = await userRepository.findOne(id);
 
-const updateUser = async (id: string, updatedUser: IUserWithPass) => {
-  const foundUser = users.find((user: IUserWithId) => (user.id === id));
-  if (foundUser) {
-    foundUser.name = updatedUser.name;
-    foundUser.login = updatedUser.login;
-    foundUser.password = updatedUser.password;
-    return foundUser;
+  return findUser ?? null;
+};
+
+const save = async (name: string, login: string, password: string): Promise<UserDB> => {
+  const userRepository = await getRepository(UserDB);
+  const newUser = await userRepository.create({ name, login, password });
+  const savedUser = await userRepository.save(newUser);
+
+  return savedUser;
+};
+
+const update = async (
+  id: string,
+  name: string,
+  login: string,
+  password: string
+): Promise<UserDB | null> => {
+  const userRepository = await getRepository(UserDB);
+  const findUser = await userRepository.findOne(id);
+  if (findUser === undefined) return null;
+  const updatedUser = await userRepository.update(id, { name, login, password });
+
+  return updatedUser.raw;
+};
+
+const deleteUser = async (id: string): Promise<boolean> => {
+  const userRepository = await getRepository(UserDB);
+  await tasksService.resetID(id);
+  const deletedUser = await userRepository.delete(id);
+  
+  if (deletedUser.affected) {
+    return true;
   }
-  return users;
+
+  return false;
 };
 
-const deleteUser = async (id: string) => {
-  const index = users.findIndex((user: IUserWithId) => user.id === id);
-  users.splice(index, 1);
-  tasks.forEach((task: ITask) => {
-    if (task.userId === id) {
-      const updatedTask = task;
-      updatedTask.userId = null;
-    }
-  })
-  return {};
-};
-
-export { getAllUsers, createUser, readUser, updateUser, deleteUser };
+export { getAll, getById, save, update, deleteUser };

@@ -1,36 +1,20 @@
-import { v4 as uuidv4 } from 'uuid';
-
-// interface IColumns {
-//   id: string;
-//   title: string;
-//   order: number;
-// }
-
-export interface IBoard {
-  id: string;
-  title: string;
-  columns: never[];
-}
+import { v4 as uuid } from 'uuid';
+import Column from "./column.model";
 
 class Board {
-  id: string;
+  id?: string;
 
   title: string;
 
-  columns: never[];
+  columns: Column[];
 
-  constructor({
-    id = uuidv4(),
-    title = 'Board',
-    columns = []
-  } = {}) {
-    this.id = id;
+  constructor({ title, columns }: Board) {
+    this.id = uuid();
     this.title = title;
-    this.columns = columns;
-  }
-
-  static toResponse(board: IBoard) {
-    return board;
+    this.columns = [];
+    columns.forEach((col: Column) => {
+      this.columns.push(new Column({ title: col.title, order: col.order }));
+    });
   }
 }
 

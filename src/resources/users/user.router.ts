@@ -1,56 +1,70 @@
 import { Router } from 'express';
-import { getAll, create, read, update, remove } from './user.service';
-import User from './user.model';
+import * as usersService from "./user.service";
+import { UserDB } from '../../entities/User';
 
 const router = Router();
 
-router.route('/')
-  .get(async (_, res) => {
-    const users = await getAll();
-    if (users) {
-      res.status(200).json(users.map(User.toResponse));
-    } else {
-      res.status(400).send();
-    }
-  })
+router.route('/').get(async (_, res) => {
+  try {
+    const users = await usersService.getAll();
+    res.status(200).json(users.map(UserDB.toResponse));
+  } catch {
+    res.status(401).json('Unauthorized');
+  }
+});
 
-  .post(async (req, res) => {
-    const user = await create(req.body);
+router.route('/:id').get(async (req, res) => {
+  try {
+    const user = await usersService.getUser(req.params.id);
     if (user) {
-      res.status(201).json(User.toResponse(user));
+      res.status(200).json(UserDB.toResponse(user));
     } else {
-      res.status(400).send();
+      res.status(404).json('User not found');
     }
-  });
+  } catch {
+    res.status(401).json('Unauthorized');
+  }
+});
 
+router.route('/').post(async (req, res) => {
+  try {
+    const { name, login, password } = req.body;
+    const user = await usersService.save(name, login, password);
+    if (user) {
+      res.status(201).json(UserDB.toResponse(user));
+    } else {
+      res.status(400).json('Bad request');
+    }
+  } catch {
+    res.status(401).json('Unauthorized');
+  }
+});
 
-  router.route('/:id')
-    .get(async (req, res) => {
-      const user = await read(req.params.id);
-      if (user) {
-        res.status(200).json(User.toResponse(user));
-      } else {
-        res.status(404).send();
-      }
+router.route('/:id').put(async (req, res) => {
+  try {
+    const { name, login, password } = req.body;
+    const user = await usersService.update(req.params.id, name, login, password);
+    if (user) {
+      res.status(200).json(UserDB.toResponse(user));
+    } else {
+      res.status(400).json('Bad request');
+    }
+  } catch {
+    res.status(401).json('Unauthorized');
+  }
+});
 
-    })
-
-    .put(async (req, res) => {
-      const user = await update(req.params.id, req.body);
-      if (user) {
-        res.status(200).json(User.toResponse(user));
-      } else {
-        res.status(400).send();
-      }
-    })
-
-    .delete(async (req, res) => {
-      const user = await remove(req.params.id);
-      if (user) {
-        res.status(204).send();
-      } else {
-        res.status(404).send();
-      }
-    });
+router.route('/:id').delete(async (req, res) => {
+  try {
+    const result = await usersService.deleteUser(req.params.id);
+    if (result) {
+      res.status(204).json('The user has been deleted');
+    } else {
+      res.status(404).json('User not found');
+    }
+  } catch {
+    res.status(401).json('Unauthorized');
+  }
+});
 
 export default router;

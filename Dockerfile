@@ -1,8 +1,10 @@
-FROM node:16 AS build
-EXPOSE 4000
-WORKDIR /src
-COPY . .
-RUN npm install
 FROM node:16-alpine
-COPY --from=build /src /
-CMD [ "npm", "start"]
+RUN mkdir -p /usr/app
+WORKDIR /usr/app
+COPY package.json /usr/app
+COPY package-lock.json /usr/app
+RUN npm install && npm install tsc -g
+RUN tsc
+COPY . .
+ENV PORT=4000
+CMD npm run dev

@@ -1,10 +1,20 @@
-import { getAllUsers, createUser, readUser, updateUser, deleteUser } from './user.memory.repository';
-import { IUserWithPass } from './user.model';
+import * as usersRepo from './user.memory.repository';
+import { UserDB } from '../../entities/User';
 
-const getAll = () => getAllUsers();
-const create = (user: IUserWithPass) => createUser(user);
-const read = (id: string) => readUser(id);
-const update = (id: string, user: IUserWithPass) => updateUser(id, user);
-const remove = (id: string) => deleteUser(id);
+const getAll = (): Promise<UserDB[]> => usersRepo.getAll();
 
-export { getAll, create, read, update, remove };
+const getUser = (id: string): Promise<UserDB | null> => usersRepo.getById(id);
+
+const save = (name: string, login: string, password: string): Promise<UserDB> =>
+  usersRepo.save(name, login, password);
+
+const update = (
+  id: string,
+  name: string,
+  login: string,
+  password: string
+): Promise<UserDB | null> => usersRepo.update(id, name, login, password);
+
+const deleteUser = (id: string): Promise<boolean> => usersRepo.deleteUser(id);
+
+export { getAll, getUser, save, update, deleteUser };

@@ -1,32 +1,42 @@
-version: "3"
-
+version: '3'
 services:
-  postgres:
-    build: docker_database
-    restart: always
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_PASSWORD : ${POSTGRES_PASSWORD}
-      POSTGRES_HOST_AUTH_METHOD: "trust"
-    volumes:
-      - postgres:/var/lib
   node:
-    build: .
-    networks:
-      - db
-    volumes:
-      - node:/src/logs
-    ports:
-      - "${PORT}:${PORT}"
+    image: node
+    build:
+     context: .
+     dockerfile: Dockerfile
     restart: always
+    ports:
+      - ${PORT}:${PORT}
     depends_on:
       - postgres
-
-volumes:
-  node:
+    environment:
+      - PORT=4000
+      - POSTGRES_HOST=${POSTGRES_HOST_NAME}
+    volumes:
+      - .:/usr/app
+      - ./log:/usr/app/log
+    networks:
+      - app-network
   postgres:
-
+    image: postgres
+    build: ./database
+    container_name: ${POSTGRES_HOST_NAME}
+    restart: always
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./dbdata:/var/lib/postgresql/data
+    networks:
+      - app-network
 networks:
-  db:
-    external:
-      name: my-pre-existing-network
+  app-network:
+    driver: bridge
+volumes:
+  dbdata:
+  node_modules:
+  log:
