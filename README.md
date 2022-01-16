@@ -74,21 +74,9 @@ For more information, visit: https://code.visualstudio.com/docs/editor/debugging
 ### Docker
 
 ```
-docker build . -t task-7
+npm i
 ```
 
 ```
-docker network create my-pre-existing-network
-```
-
-```
-docker volume create node
-```
-
-```
-docker volume create postgres
-```
-
-```
-docker-compose up
+docker-compose up --build
 ```
