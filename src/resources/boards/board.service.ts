@@ -1,10 +1,12 @@
-import { getAllBoards, createBoard, readBoard, updateBoard, deleteBoard } from './board.memory.repository';
-import { IBoard } from './board.model';
+import * as boardsRepo from '../boards/board.memory.repository';
+import { BoardDB } from '../../entities/Board';
 
-const getAll = () => getAllBoards();
-const create = (board: IBoard) => createBoard(board);
-const read = (id: string) => readBoard(id);
-const update = (id: string, board: IBoard) => updateBoard(id, board);
-const remove = (id: string) => deleteBoard(id);
+const getAll = (): Promise<BoardDB[]> => boardsRepo.getAll();
+const getBoard = (id: string): Promise<BoardDB | null> => boardsRepo.getById(id);
+const save = (title: string, columns: []): Promise<BoardDB> =>
+  boardsRepo.save(title, columns);
+const update = (id: string, title: string, columns: []): Promise<BoardDB | null> =>
+  boardsRepo.update(id, title, columns);
+const remove = (id: string): Promise<boolean> => boardsRepo.remove(id);
 
-export { getAll, create, read, update, remove };
+export { getAll, getBoard, save, update, remove };

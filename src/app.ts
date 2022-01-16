@@ -1,47 +1,54 @@
-import express, { ErrorRequestHandler } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import swaggerUI from 'swagger-ui-express';
 import path from 'path';
 import YAML from 'yamljs';
+import * as fs from 'fs';
+import { writeFileSync } from 'fs';
+import { finished } from 'stream';
+import { getReasonPhrase, StatusCodes } from 'http-status-codes';
 import userRouter from './resources/users/user.router';
-import taskRouter from './resources/tasks/task.router';
 import boardRouter from './resources/boards/board.router';
-import { logger, expressLogger } from './logger';
+import taskRouter from './resources/tasks/task.router';
+import './errorHandler';
+import { LOG_PATH } from './common/constants';
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
-app.use(expressLogger);
-
 app.use(express.json());
+
+if (!fs.existsSync(LOG_PATH)) {
+  fs.mkdirSync(LOG_PATH);
+}
 
 app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 app.use('/', (req, res, next) => {
+  const { method, url, body } = req;
   if (req.originalUrl === '/') {
     res.send('Service is running!');
     return;
   }
+
+  finished(res, () => {
+    const { statusCode } = res; // prettier-ignore
+    writeFileSync(`${LOG_PATH}out.log`, `\n method: ${method} url: ${url} params: ${JSON.stringify(req.params)} query: ${JSON.stringify(req.query)} body: ${JSON.stringify(body)} statusCode: ${statusCode}`, { flag: 'a' }); // prettier-ignore
+    console.log(`method: ${method} url: ${url} params: ${JSON.stringify(req.params)} query: ${JSON.stringify(req.query)} body: ${JSON.stringify(body)} statusCode: ${statusCode}`); // prettier-ignore
+  });
   next();
 });
 
-// eslint-disable-next-line
-app.use(((err, req, res, next) => {
-  const errMessage = 'Internal Server Error';
-  logger.info(err, errMessage);
-  res.status(err.status || 500).send(errMessage);
-}) as ErrorRequestHandler);
-
-process
-  .on('unhandledRejection', (reason, p) => {
-    logger.info(reason, 'Unhandled Rejection at Promise', p);
-  })
-  .on('uncaughtException', err => {
-    logger.info(err, 'Uncaught Exception thrown');
-    process.exit(1);
-  });
-
 app.use('/users', userRouter);
-app.use('/boards',boardRouter);
-app.use('/boards/:boardId/tasks', taskRouter);
+app.use('/boards', boardRouter);
+app.use('/boards', taskRouter);
+
+app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
+  writeFileSync(`${LOG_PATH}error.log`, `\nError: ${err.message}`, { flag: 'a' });
+  console.error(`Error: ${err.message}`);
+  res
+    .status(StatusCodes.INTERNAL_SERVER_ERROR)
+    .json(getReasonPhrase(StatusCodes.INTERNAL_SERVER_ERROR));
+  next();
+});
 
 export default app;
