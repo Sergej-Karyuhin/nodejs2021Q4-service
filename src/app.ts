@@ -9,6 +9,8 @@ import { getReasonPhrase, StatusCodes } from 'http-status-codes';
 import userRouter from './resources/users/user.router';
 import boardRouter from './resources/boards/board.router';
 import taskRouter from './resources/tasks/task.router';
+import loginRouter from './resources/login/login.router';
+import loginGuard from './resources/login/login.guard';
 import './errorHandler';
 import { LOG_PATH } from './common/constants';
 
@@ -38,9 +40,10 @@ app.use('/', (req, res, next) => {
   next();
 });
 
-app.use('/users', userRouter);
-app.use('/boards', boardRouter);
-app.use('/boards', taskRouter);
+app.use('/login', loginRouter)
+app.use('/users', loginGuard, userRouter);
+app.use('/boards', loginGuard, boardRouter);
+app.use('/boards', loginGuard, taskRouter);
 
 app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
   writeFileSync(`${LOG_PATH}error.log`, `\nError: ${err.message}`, { flag: 'a' });
