@@ -17,4 +17,6 @@ const update = (
 
 const deleteUser = (id: string): Promise<boolean> => usersRepo.deleteUser(id);
 
-export { getAll, getUser, save, update, deleteUser };
+const getUserByLogin = (login: string): Promise<UserDB | null> => usersRepo.getUserByLogin(login);
+
+export { getAll, getUser, save, update, deleteUser, getUserByLogin };

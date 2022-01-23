@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
+import bcrypt from 'bcrypt';
 
 interface IUserPrivate {
   id?: string;
@@ -17,8 +18,16 @@ export class UserDB {
   @Column('varchar', { length: 25 })
   login: string;
 
-  @Column('varchar', { length: 25 })
+  @Column()
   password: string;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword(): Promise<void> {
+    if (this.password) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
+  }
 
   static toResponse(user: UserDB): IUserPrivate {
     const { id, name, login } = user;
