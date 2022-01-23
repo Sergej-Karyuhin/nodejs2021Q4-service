@@ -8,19 +8,29 @@
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/Sergej-Karyuhin/nodejs2021Q4-service.git
 ```
 
 ## Installing NPM modules
 
 ```
-npm install
+npm i
 ```
 
 ## Running application
 
 ```
-npm start
+setup your .env file
+```
+
+```
+npm run compile
+```
+
+## Running application (Docker)
+
+```
+docker-compose up --build
 ```
 
 After starting the app on port (4000 as default) you can open
