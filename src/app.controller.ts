@@ -11,9 +11,7 @@ import { HttpExceptionFilter } from './http-exception.filter';
 
 @Controller()
 export class AppController {
-  constructor(
-    private authService: AuthService,
-  ) {}
+  constructor(private authService: AuthService) {}
   @UseGuards(LocalAuthGuard)
   @UseFilters(new HttpExceptionFilter())
   @Post('/login')

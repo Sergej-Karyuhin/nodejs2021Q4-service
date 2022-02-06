@@ -10,13 +10,10 @@ export class AuthService {
     private readonly usersService: UsersService,
   ) {}
 
-  async validateUser(
-    login: string,
-  ): Promise<IUserPrivate | null> {
+  async validateUser(login: string): Promise<IUserPrivate | null> {
     const user = await this.usersService.getByProps(login);
     if (user && user.login === login) {
-      const { password, ...result } = user;
-      return result;
+      return user;
     }
     return null;
   }
