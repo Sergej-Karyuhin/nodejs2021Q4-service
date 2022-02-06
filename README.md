@@ -13,3 +13,7 @@ $ npm install
 ```bash
 $ docker-compose up --build
 ```
+
+## Express vs Fastify in this project
+- [Express](https://ibb.co/NF1mvRQ)
+- [Fastify](https://ibb.co/TmcpXW0)
